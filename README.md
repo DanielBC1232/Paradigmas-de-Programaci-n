@@ -6,7 +6,7 @@ pandas
 numpy
 scikit-learn
 plotly
-openpyxl # Si vas a leer archivos .xlsx
+openpyxl para .xlsx
 
 =====================================================
 
@@ -14,5 +14,5 @@ Iniciar:
 
 >streamlit run app.py
 
-
+(corre en navegador)
 =====================================================
