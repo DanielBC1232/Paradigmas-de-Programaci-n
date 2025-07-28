@@ -1,29 +1,50 @@
 import numpy as np
-from scipy import stats
+import pandas as pd
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 from src.utils import detectar_tipos
+from AI import AI
 
 def analizar_dataframe(df):
+
+    # Detectar tipos de columnas
     tipos = detectar_tipos(df)
-    numericas = df.select_dtypes(include=["int64", "float64"])
 
-    descriptivos = numericas.describe()
+    # Convertir columnas numéricas a tipo numérico
+    for col in tipos["numericas"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    z_scores = np.abs(stats.zscore(numericas))
-    outliers = (z_scores > 3).sum().sum()
-    porc_outliers = 100 * outliers / len(df)
-
-    modelo = KMeans(n_clusters=3, n_init=10, random_state=0)
-    etiquetas = modelo.fit_predict(numericas)
+    # Filtrar numéricas y quitar NaN
+    df_numerico = df[tipos["numericas"]].dropna()
 
     resumen = f"Variables numéricas detectadas: {tipos['numericas']}\n"
-    resumen += f"Se detectaron {porc_outliers:.2f}% de outliers (Z-score > 3).\n"
-    resumen += f"Se identificaron 3 clusters con KMeans."
+    resumen += f"Variables categóricas detectadas: {tipos['categoricas']}\n"
+
+    # Estadísticas descriptivas básicas
+    descriptivos = df_numerico.describe()
+
+    # Correlaciones
+    correlacion = df_numerico.corr()
+
+     # Clustering condicionado
+    if df_numerico.shape[0] >= 3 and len(tipos["numericas"]) >= 1:
+        X = StandardScaler().fit_transform(df_numerico)
+        k = min(3, df_numerico.shape[0])
+        kmeans = KMeans(n_clusters=k, random_state=0).fit(X)
+        n_clusters = len(set(kmeans.labels_))
+        resumen += f"\n Se detectaron {n_clusters} grupos."
+    else:
+        n_clusters = 0
+        resumen += "\n No hay suficientes datos válidos para clustering"
+
+    # Generar interpretación IA
+    interpretacion_ia = AI.generar_interpretacion(resumen, correlacion, n_clusters)
 
     return {
-        "resumen_texto": resumen,
+        "tipos": tipos,
         "descriptivos": descriptivos,
-        "correlacion": numericas.corr(),
-        "clusters": etiquetas,
-        "porcentaje_outliers": porc_outliers
+        "correlacion": correlacion,
+        "resumen_texto": resumen,
+        "clusters": n_clusters,
+        "interpretacion_ia": interpretacion_ia
     }
