@@ -11,7 +11,7 @@ def generar_interpretacion(resumen, correlacion, n_clusters):
         payload = {
             "model": MODEL,
             "messages": [
-                {"role": "system", "content": "Eres un experto en análisis de datos."},
+                {"role": "system", "content": "You are a professional data analyst specialized in interpreting data analysis results."},
                 {"role": "user", "content": prompt}
             ],
             "temperature": 0.4,

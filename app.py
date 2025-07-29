@@ -1,7 +1,5 @@
 import streamlit as st
 from views import upload_view, dashboard_view, interpretation_view
-from src.analyzer import analizar_dataframe
-from AI import AI
 
 if "pagina_actual" not in st.session_state:
     st.session_state.pagina_actual = "Subir datos"
@@ -27,9 +25,13 @@ if st.sidebar.button("🤖 Interpretación IA"):
 pagina = st.session_state.pagina_actual
 
 if pagina == "Subir datos":
-    upload_view.render()
+    resultado = upload_view.render()
+    if resultado:
+        st.session_state.resultado_analisis = resultado
+        cambiar_pagina("Interpretación IA")
+
 elif pagina == "Dashboard":
-    # En Interpretacion de IA guardamos el resultado
-    st.session_state.resultado_analisis = interpretation_view.render()
+    dashboard_view.render()
+
 elif pagina == "Interpretación IA":
     interpretation_view.render(st.session_state.resultado_analisis)
