@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 from views import upload_view, dashboard_view, interpretation_view
 
 if "pagina_actual" not in st.session_state:
@@ -20,6 +21,10 @@ if st.sidebar.button("📈 Dashboard"):
     cambiar_pagina("Dashboard")
 if st.sidebar.button("🤖 Interpretación IA"):
     cambiar_pagina("Interpretación IA")
+
+if st.sidebar.button("🔄 Reiniciar aplicación"):
+    st.session_state.clear()
+    os._exit(0)
 
 # Renderizar vista según la página actual
 pagina = st.session_state.pagina_actual

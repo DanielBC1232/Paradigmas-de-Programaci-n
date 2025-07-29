@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from src.analyzer import analizar_dataframe
 from src.visualizer import mostrar_graficos
-from AI.AI import generar_interpretacion #IA
+from AI.AI import generar_interpretacion
 
 DATA_PATH = "data/uploaded_data.csv"
 
