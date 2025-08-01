@@ -14,7 +14,7 @@ def cambiar_pagina(pagina):
     st.session_state.pagina_actual = pagina
 
 # Menú lateral con botones simétricos
-st.sidebar.title("📊 Menú")
+st.sidebar.title("Menú")
 if st.sidebar.button("📁 Subir datos"):
     cambiar_pagina("Subir datos")
 if st.sidebar.button("📈 Dashboard"):
@@ -29,6 +29,7 @@ if st.sidebar.button("🔄 Reiniciar aplicación"):
 # Renderizar vista según la página actual
 pagina = st.session_state.pagina_actual
 
+# Renderizar la vista escogida
 if pagina == "Subir datos":
     resultado = upload_view.render()
     if resultado:
@@ -39,4 +40,4 @@ elif pagina == "Dashboard":
     dashboard_view.render()
 
 elif pagina == "Interpretación IA":
-    interpretation_view.render(st.session_state.resultado_analisis)
+    interpretation_view.render()

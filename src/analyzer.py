@@ -2,11 +2,10 @@ import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
-from src.utils import detectar_tipos
+from src.utils import detectar_tipos, detectar_outliers, detectar_relaciones
 from AI import AI
 
 def analizar_dataframe(df):
-
     # Detectar tipos de columnas
     tipos = detectar_tipos(df)
 
@@ -21,43 +20,57 @@ def analizar_dataframe(df):
     numericas_str = ", ".join(tipos["numericas"]) if tipos["numericas"] else "Ninguna"
     categoricas_str = ", ".join(tipos["categoricas"]) if tipos["categoricas"] else "Ninguna"
 
-    # Resumen del análisis
+    # Resumen inicial
     resumen = f"Variables numéricas detectadas: {numericas_str}\n"
     resumen += f"Variables categóricas detectadas: {categoricas_str}\n"
 
-    # Si no hay columnas numéricas, retornar resumen
+    # Estadísticas descriptivas y correlación
     df_numerico = df[tipos["numericas"]].apply(pd.to_numeric, errors="coerce")
 
-    # Estadísticas descriptivas y correlación=================================
+    # Si no hay columnas numéricas con datos suficientes
     if df_numerico.dropna(how="all", axis=1).shape[1] == 0:
         resumen += "\nNo se encontraron columnas numéricas con datos suficientes.\n"
         descriptivos = pd.DataFrame()
         correlacion = pd.DataFrame()
+        outliers_info = "No se pudo analizar valores atípicos por falta de datos.\n"
+        relaciones_info = "No hay suficientes variables para analizar relaciones.\n"
     else:
+        # Estadísticas
         descriptivos = df_numerico.describe()
         correlacion = df_numerico.corr()
 
-    # Clustering =============================================================
-     
+    # ===== Outliers & Relaciones Bivariadas
+    outliers_info = detectar_outliers(df_numerico)
+    relaciones_info = detectar_relaciones(df_numerico)
+
+    # CLUSTERING =============================================================
     if df_numerico.dropna().shape[0] >= 3:
-        X = StandardScaler().fit_transform(df_numerico.dropna())
-        k = min(3, X.shape[0])
-        kmeans = KMeans(n_clusters=k, random_state=0).fit(X)
-        n_clusters = len(set(kmeans.labels_))
-        resumen += f"Se detectaron {n_clusters} grupos por KMeans.\n"
+        X = StandardScaler().fit_transform(df_numerico.dropna())        # Normalizar datos
+        k = min(3, X.shape[0])                                          # Usar 3 clusters como máximo si hay suficientes datos
+        kmeans = KMeans(n_clusters=k, random_state=0).fit(X)             # Aplicar KMeans
+        n_clusters = len(set(kmeans.labels_))                           # Número de clusters detectados 
+        resumen += f"Se detectaron {n_clusters} grupos por KMeans.\n"   # Resumen de clusters
     else:
+        # Si no hay suficientes datos
         n_clusters = 0
         resumen += "No hay suficientes datos válidos para clustering (mínimo 3 filas).\n"
 
-    # Generar interpretación IA ================================================
-    interpretacion_ia = AI.generar_interpretacion(resumen, correlacion, n_clusters)
+    # INTERPRETACIÓN IA ======================================================
+    interpretacion_ia = AI.generar_interpretacion(
+        resumen,
+        correlacion,
+        n_clusters,
+        outliers_info,
+        relaciones_info
+    )
 
-    #Retornar todo el resultado
     return {
         "tipos": tipos,
         "descriptivos": descriptivos,
         "correlacion": correlacion,
         "resumen_texto": resumen,
         "clusters": n_clusters,
+        "outliers_info": outliers_info,
+        "relaciones_info": relaciones_info,
         "interpretacion_ia": interpretacion_ia
     }
