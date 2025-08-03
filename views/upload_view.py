@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 from src.analyzer import analizar_dataframe # Funcion de analisis del DataFrame
+from src.utils import read_csv_safe
 
 #Donde y como se guardan los datos:
 DATA_PATH = "data/uploaded_data.csv"
@@ -12,7 +13,7 @@ def render():
     # Botón para cargar CSV local
     if st.button("Cargar Datos Locales"):
         if os.path.exists(DATA_PATH):
-            df = pd.read_csv(DATA_PATH)
+            df = read_csv_safe(DATA_PATH)
             st.success("CSV cargado desde disco:")
             st.dataframe(df)
         else:
@@ -24,7 +25,9 @@ def render():
     # df = archivo con datos
 
     if archivo is not None:
-        df = pd.read_csv(archivo)               # Cargar el DataFrame desde el archivo subido
+        df = read_csv_safe(archivo)             # Cargar el DataFrame desde el archivo subido
+        # Crear directorio si no existe
+        os.makedirs(os.path.dirname(DATA_PATH), exist_ok=True)
         df.to_csv(DATA_PATH, index=False)
         st.success("Archivo cargado correctamente.")
         st.dataframe(df.head())
@@ -32,7 +35,7 @@ def render():
     
     elif os.path.exists(DATA_PATH):
         st.info("Ya hay un archivo cargado:")
-        df = pd.read_csv(DATA_PATH)             # Cargar el DataFrame desde el almacenamiento local
+        df = read_csv_safe(DATA_PATH)           # Cargar el DataFrame desde el almacenamiento local
         st.dataframe(df.head())
         st.success("Archivo cargado desde el almacenamiento local.")
         analizar_dataframe(df)                  # Análisis del DataFrame cargado

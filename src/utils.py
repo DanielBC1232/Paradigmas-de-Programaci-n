@@ -1,4 +1,28 @@
 import pandas as pd
+import chardet
+
+def detect_encoding(file_bytes):
+    """Detectar la codificación de un archivo"""
+    result = chardet.detect(file_bytes)
+    return result['encoding']
+
+def read_csv_safe(file_or_path):
+    """Leer CSV con detección automática de encoding"""
+    if hasattr(file_or_path, 'read'):
+        # Es un archivo subido por streamlit
+        file_bytes = file_or_path.read()
+        encoding = detect_encoding(file_bytes)
+        file_or_path.seek(0)  # Resetear el puntero del archivo
+        return pd.read_csv(file_or_path, encoding=encoding)
+    else:
+        # Es una ruta de archivo
+        try:
+            return pd.read_csv(file_or_path, encoding='utf-8')
+        except UnicodeDecodeError:
+            with open(file_or_path, 'rb') as f:
+                file_bytes = f.read()
+            encoding = detect_encoding(file_bytes)
+            return pd.read_csv(file_or_path, encoding=encoding)
 
 def detectar_tipos(df):
 

@@ -44,12 +44,17 @@ def analizar_dataframe(df):
     relaciones_info = detectar_relaciones(df_numerico)
 
     # CLUSTERING =============================================================
-    if df_numerico.dropna().shape[0] >= 3:
-        X = StandardScaler().fit_transform(df_numerico.dropna())        # Normalizar datos
-        k = min(3, X.shape[0])                                          # Usar 3 clusters como máximo si hay suficientes datos
-        kmeans = KMeans(n_clusters=k, random_state=0).fit(X)             # Aplicar KMeans
-        n_clusters = len(set(kmeans.labels_))                           # Número de clusters detectados 
-        resumen += f"Se detectaron {n_clusters} grupos por KMeans.\n"   # Resumen de clusters
+    df_for_clustering = df_numerico.dropna()
+    if df_for_clustering.shape[0] >= 3 and df_for_clustering.shape[1] > 0:
+        X = StandardScaler().fit_transform(df_for_clustering)        # Normalizar datos
+        k = min(3, X.shape[0])                                       # Usar 3 clusters como máximo si hay suficientes datos
+        if k > 0:  # Verificar que k sea válido
+            kmeans = KMeans(n_clusters=k, random_state=0).fit(X)     # Aplicar KMeans
+            n_clusters = len(set(kmeans.labels_))                    # Número de clusters detectados 
+            resumen += f"Se detectaron {n_clusters} grupos por KMeans.\n"   # Resumen de clusters
+        else:
+            n_clusters = 0
+            resumen += "No hay suficientes datos válidos para clustering.\n"
     else:
         # Si no hay suficientes datos
         n_clusters = 0
