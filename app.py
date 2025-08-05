@@ -2,39 +2,48 @@ import streamlit as st
 import os
 from views import upload_view, dashboard_view, interpretation_view
 
+# ====================== Configuración inicial ======================
+
+# Pagina actual por defecto (donde se sube el csv)
 if "pagina_actual" not in st.session_state:
     st.session_state.pagina_actual = "Subir datos"
 
-# Almacenar resultado de análisis
+# Resultado del analisis
 if "resultado_analisis" not in st.session_state:
     st.session_state.resultado_analisis = None
 
-# Función para cambiar de página
-def cambiar_pagina(pagina):
+# Cambiar la vista actual
+def ir_a(pagina: str):
     st.session_state.pagina_actual = pagina
 
-# Menú lateral con botones simétricos
+# ========================= Menu o barra lateral ====================
+
 st.sidebar.title("Menú")
+
 if st.sidebar.button("📁 Subir datos"):
-    cambiar_pagina("Subir datos")
+    ir_a("Subir datos")
+
 if st.sidebar.button("📈 Dashboard"):
-    cambiar_pagina("Dashboard")
+    ir_a("Dashboard")
+
 if st.sidebar.button("🤖 Interpretación IA"):
-    cambiar_pagina("Interpretación IA")
+    ir_a("Interpretación IA")
 
 if st.sidebar.button("🔄 Reiniciar aplicación"):
     st.session_state.clear()
-    os._exit(0)
+    os.exit(0) # Reinicio limpio
+    #os._exit(0) Reinicio forzado
 
-# Renderizar vista según la página actual
+
+# ========================== Vistas ================================
+
 pagina = st.session_state.pagina_actual
 
-# Renderizar la vista escogida
 if pagina == "Subir datos":
     resultado = upload_view.render()
     if resultado:
         st.session_state.resultado_analisis = resultado
-        cambiar_pagina("Interpretación IA")
+        ir_a("Interpretación IA")
 
 elif pagina == "Dashboard":
     dashboard_view.render()

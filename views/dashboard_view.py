@@ -14,6 +14,11 @@ def render():
         st.warning("Primero debes subir un archivo.")
         return
 
-    df = pd.read_csv(DATA_PATH) # Cargar archivo CSV
-    
-    # Generar graficos y análisis (PENDIENTE)
+    df = pd.read_csv(DATA_PATH, encoding='utf-8') # Cargar archivo CSV
+
+    # df = DataFrame, el archivo CSV cargado
+
+
+
+
+    # Generar graficos y análisis (PENDIENTE) ==

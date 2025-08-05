@@ -1,4 +1,5 @@
 import requests
+import itertools
 
 # Conexion con LM Studio para usar modelo local
 API_URL = "http://localhost:1234/v1/chat/completions"   #endpoint de la API de LM Studio
@@ -33,11 +34,10 @@ def generar_interpretacion(resumen, correlacion, n_clusters, outliers_info, rela
 
 def construir_prompt(resumen, correlacion, n_clusters, outliers_info, relaciones_info):
     texto_corr = ""
-    for fila in correlacion.index:                                      # Iterar sobre las filas del DataFrame de correlación
-        for col in correlacion.columns:                                 # Iterar sobre las columnas del DataFrame de correlación
-            r = correlacion.loc[fila, col]                              # Obtener el valor de correlación
-            if abs(r) >= 0.75 and fila != col:                          # Verificar si la correlación es fuerte y no es la misma variable                
-                texto_corr += f"• {fila} vs {col} → r = {r:.2f}\n"      # Agregar al texto de correlación
+    for fila, col in itertools.combinations(correlacion.columns, 2): # Obtener combinaciones de columnas
+        r = correlacion.loc[fila, col]                               # Obtener el valor de correlación entre las columnas
+        if abs(r) >= 0.75:
+            texto_corr += f"• {fila} vs {col} → r = {r:.2f}\n"      # Agregar al texto de correlación formateando a dos decimales
 
     # ** Prompts en inglés son más eficientes
     prompt = f"""

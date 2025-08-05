@@ -3,40 +3,46 @@ import pandas as pd
 import os
 from src.analyzer import analizar_dataframe # Funcion de analisis del DataFrame
 
-#Donde y como se guardan los datos:
+# Ruta donde se guarda el archivo de datos cargado
 DATA_PATH = "data/uploaded_data.csv"
 
-# Componente streamlit para subir archivos
 def render():
+    st.title("📁 Cargar archivo CSV")
 
-    # Botón para cargar CSV local
+    # Opción para cargar datos locales ya guardados
     if st.button("Cargar Datos Locales"):
         if os.path.exists(DATA_PATH):
-            df = pd.read_csv(DATA_PATH)
-            st.success("CSV cargado desde disco:")
-            st.dataframe(df)
+            try:
+                df = pd.read_csv(DATA_PATH, encoding='utf-8')
+                st.success("CSV cargado desde disco:")
+                st.dataframe(df)
+            except UnicodeDecodeError:
+                st.error("El archivo está dañado o no está en UTF-8.")
         else:
-            st.warning("No se encontró el archivo CSV en data/archivo.csv")
+            st.warning("No se encontró el archivo local")
 
-    st.title("📁 Cargar archivo CSV")
-    archivo = st.file_uploader("Selecciona un archivo CSV", type=["csv","xlsx"])
+    # Componente de subida de archivos
+    archivo_subido = st.file_uploader("Selecciona un archivo CSV o Excel", type=["csv", "xlsx"])
 
-    # df = archivo con datos
-
-    if archivo is not None:
-        df = pd.read_csv(archivo)               # Cargar el DataFrame desde el archivo subido
-        df.to_csv(DATA_PATH, index=False)
-        st.success("Archivo cargado correctamente.")
-        st.dataframe(df.head())
-        analizar_dataframe(df)                  # Análisis del DataFrame cargado
-    
+    if archivo_subido is not None:
+        # Cargar nuevo archivo subido por el usuario
+        try:
+            df = pd.read_csv(archivo_subido, encoding='utf-8')
+            df.to_csv(DATA_PATH, index=False)  # Guardar una copia local
+            st.success("Archivo cargado correctamente.")
+            st.dataframe(df.head())
+            analizar_dataframe(df)
+        except UnicodeDecodeError:
+            st.error("El archivo está dañado")
+        
     elif os.path.exists(DATA_PATH):
-        st.info("Ya hay un archivo cargado:")
-        df = pd.read_csv(DATA_PATH)             # Cargar el DataFrame desde el almacenamiento local
+        # Cargar archivo previamente guardado si no se sube uno nuevo
+        st.info("Ya hay un archivo previamente cargado:")
+        df = pd.read_csv(DATA_PATH)
         st.dataframe(df.head())
-        st.success("Archivo cargado desde el almacenamiento local.")
-        analizar_dataframe(df)                  # Análisis del DataFrame cargado
-    
-    else:
-        st.info("Por favor, sube un archivo CSV.")
+        st.success("Archivo recuperado desde el almacenamiento local.")
+        analizar_dataframe(df)
 
+    else:
+        # Mensaje por defecto si no hay archivo disponible
+        st.info("Por favor, sube un archivo CSV para comenzar.")
