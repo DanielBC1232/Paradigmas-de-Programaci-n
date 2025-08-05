@@ -1,10 +1,11 @@
 import requests
-import itertools
+from src.utils.correlations import correlacion_prompt
 
 # Conexion con LM Studio para usar modelo local
 API_URL = "http://localhost:1234/v1/chat/completions"   #endpoint de la API de LM Studio
 MODEL = "meta-llama-3-8b-instruct"                      # Nombre del modelo
 
+# ===== Generar interpretación de análisis con IA ================================
 def generar_interpretacion(resumen, correlacion, n_clusters, outliers_info, relaciones_info):
 
     # Construir el prompt para enviar a LM Studio
@@ -31,13 +32,14 @@ def generar_interpretacion(resumen, correlacion, n_clusters, outliers_info, rela
 
     except Exception as e:
         return f"Error al conectar con LM Studio: {e}"
+# ================================================================================
 
+# ====== Construir el prompt para la IA ===========================================
 def construir_prompt(resumen, correlacion, n_clusters, outliers_info, relaciones_info):
-    texto_corr = ""
-    for fila, col in itertools.combinations(correlacion.columns, 2): # Obtener combinaciones de columnas
-        r = correlacion.loc[fila, col]                               # Obtener el valor de correlación entre las columnas
-        if abs(r) >= 0.75:
-            texto_corr += f"• {fila} vs {col} → r = {r:.2f}\n"      # Agregar al texto de correlación formateando a dos decimales
+
+    # ===== Resumen de correlaciones destacadas ========
+    texto_corr = correlacion_prompt(correlacion)
+    # ==================================================
 
     # ** Prompts en inglés son más eficientes
     prompt = f"""
@@ -55,6 +57,6 @@ def construir_prompt(resumen, correlacion, n_clusters, outliers_info, relaciones
     - Prohibit responding in english or any other language, must be in Spanish and use professional tone
     - Prohibit showing the code used to generate the analysis, reasoning or any other technical detail
     - Prohibit showing the summary of the analysis, only the interpretation and understandable for a non-technical user
-    """.strip()
-    
+    """.strip() 
     return prompt
+# ============================================================================

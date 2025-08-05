@@ -31,8 +31,7 @@ if st.sidebar.button("🤖 Interpretación IA"):
 
 if st.sidebar.button("🔄 Reiniciar aplicación"):
     st.session_state.clear()
-    os.exit(0) # Reinicio limpio
-    #os._exit(0) Reinicio forzado
+    os._exit(0) #Reinicio forzado
 
 
 # ========================== Vistas ================================
