@@ -20,23 +20,37 @@ def render():
 
     # Resumen del análisis
     st.subheader("Resumen del sistema:")
+    st.markdown("---") #Separador visual
+
+    # Detección de tipos de variables
+    st.subheader("Detección de tipos de variables:")
     st.text(resultado["resumen_texto"])
+
+    st.markdown("---")
 
     #estadísticas descriptivas y correlación
     st.subheader("Estadísticas descriptivas:")
     st.dataframe(resultado["descriptivos"])
 
+    st.markdown("---")
+
     # Detección de valores atípicos
     st.subheader("Detección de valores atípicos:")
     st.text(resultado["outliers_info"])
+
+    st.markdown("---")
 
     # Información de tipos de variables
     st.subheader("Relaciones entre variables:")
     st.text(resultado["relaciones_info"])
 
+    st.markdown("---")
+
     # Mapa de correlaciones
     st.subheader("Mapa de correlaciones:")
     mostrar_graficos(df)
+
+    st.markdown("---")
 
     # Interpretación por IA
     st.subheader("Interpretación por IA:")
