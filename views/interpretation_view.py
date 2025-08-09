@@ -15,8 +15,20 @@ def render():
         st.warning("Primero debes subir un archivo.")
         return
 
-    df = pd.read_csv(DATA_PATH) # Cargar el DataFrame desde el archivo CSV
-    resultado = analizar_dataframe(df)
+    # Cargar el DataFrame desde el archivo CSV
+    df = pd.read_csv(DATA_PATH) 
+    resultado = analizar_dataframe(df) # Ejecuta analyzer.py
+
+    '''
+    Ver todos los análisis realizados por el sistema y la interpretación generada por IA.
+        1- Resumen del análisis
+        2- Detección de tipos de variables
+        3- Estadísticas descriptivas y correlación
+        4- Detección de valores atípicos
+        5- Información de tipos de variables
+        6- Mapa de correlaciones
+        7- Interpretación por IA
+    '''
 
     # Resumen del análisis
     st.subheader("Resumen del sistema:")
