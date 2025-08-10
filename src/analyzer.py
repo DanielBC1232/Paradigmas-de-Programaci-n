@@ -11,6 +11,8 @@ from src.utils.clustering import analisis_clustering
 # Función para analizar el DataFrame que se le pasa por parámetro
 def analizar_dataframe(df):
     
+    resumen = ""
+
     # ===== Verificar tipos =======================================================
     tipos = detectar_tipos(df)
     # =============================================================================

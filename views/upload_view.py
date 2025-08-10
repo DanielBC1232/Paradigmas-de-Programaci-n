@@ -13,7 +13,7 @@ def render():
     if st.button("Cargar Datos Locales"):
         if os.path.exists(DATA_PATH):
             try:
-                df = pd.read_csv(DATA_PATH, encoding='utf-8')
+                df = pd.read_csv(DATA_PATH, sep=r'[;,]', engine='python', encoding='utf-8')
                 st.success("CSV cargado desde disco:")
                 st.dataframe(df)
             except UnicodeDecodeError:
@@ -31,7 +31,7 @@ def render():
     if archivo_subido is not None:
         # Cargar nuevo archivo subido por el usuario
         try:
-            df = pd.read_csv(archivo_subido, encoding='utf-8')
+            df = pd.read_csv(archivo_subido, sep=r'[;,]', engine='python', encoding='utf-8')
             df.to_csv(DATA_PATH, index=False)  # Guardar una copia local
             st.success("Archivo cargado correctamente.")
             st.dataframe(df.head())

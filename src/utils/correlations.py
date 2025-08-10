@@ -1,34 +1,40 @@
 import itertools
+import pandas as pd
+
+# ===== Función interna para cálculo de correlaciones =====================
+def obtener_relaciones(df, metodo="spearman", umbral=0.75):
+
+    # Asegurarse de que el DataFrame tenga al menos 2 columnas numéricas
+    df_num = df.select_dtypes(include="number")
+    if df_num.shape[1] < 2:
+        return [] # Retornar nada
+    
+
+    corr = df_num.corr(method=metodo)
+    # Filtrar las relaciones que superen el umbral
+    relaciones = [
+        (col1, col2, corr.loc[col1, col2])
+        for col1, col2 in itertools.combinations(corr.columns, 2)
+        if abs(corr.loc[col1, col2]) >= umbral
+    ]
+    return relaciones
 
 # ===== Detectar relaciones significativas entre variables numéricas =======
-def detectar_relaciones(df_numerico, umbral=0.75):
-    if df_numerico.shape[1] < 2:
-        return "No hay suficientes variables numéricas para analizar relaciones."
-
-    correlacion = df_numerico.corr()
-    relaciones = []
-
-    for i, col1 in enumerate(correlacion.columns):
-        for j in range(i + 1, len(correlacion.columns)):
-            col2 = correlacion.columns[j]
-            r = correlacion.iloc[i, j]
-            if abs(r) >= umbral:
-                relaciones.append((col1, col2, r))
+def detectar_relaciones(df, metodo="spearman", umbral=0.75):
+    relaciones = obtener_relaciones(df, metodo, umbral)
 
     if not relaciones:
         return "No se detectaron relaciones significativas entre variables."
-
-    texto = "Relaciones significativas entre variables:\n"
-    texto += "\n".join(f"• {a} vs {b} → r = {r:.2f}" for a, b, r in relaciones) # Formatear a dos decimales
-    return texto # Retornar el texto (formateado)
+    
+    texto = f"Relaciones {metodo.capitalize()} con |r| ≥ {umbral}:\n"
+    texto += "\n".join(f"• {a} vs {b} → r = {r:.2f}" for a, b, r in relaciones)
+    return texto
 # ===========================================================================
 
-# ===== Para contruir el prompt de manera más limpia=========================
-def correlacion_prompt(correlacion, umbral=0.75):
-    texto_corr = ""
-    for fila, col in itertools.combinations(correlacion.columns, 2):
-        r = correlacion.loc[fila, col]
-        if abs(r) >= umbral:
-            texto_corr += f"• {fila} vs {col} → r = {r:.2f}\n"
-    return texto_corr or "No se detectaron correlaciones fuertes."
-# ============================================================================
+# ===== Para construir el prompt de manera más limpia =======================
+def correlacion_prompt(df, metodo="spearman", umbral=0.75):
+    relaciones = obtener_relaciones(df, metodo, umbral)
+    if not relaciones:
+        return "No se detectaron correlaciones fuertes."
+    return "\n".join(f"• {a} vs {b} → r = {r:.2f}" for a, b, r in relaciones)
+# ===========================================================================

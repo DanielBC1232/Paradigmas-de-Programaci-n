@@ -20,7 +20,7 @@ def generar_interpretacion(resumen, correlacion, n_clusters, outliers_info, rela
                 {"role": "user", "content": prompt}
             ],
             "temperature": 0.4,
-            "max_tokens": 750,
+            "max_tokens": 2048,
             "stream": False
         }
 
@@ -53,7 +53,9 @@ def construir_prompt(resumen, correlacion, n_clusters, outliers_info, relaciones
     {relaciones_info or 'No strong relationships between variables were detected.'}
     Your task is:
     - Point out possible implications or decisions the user could make
-    - Avoid unnecessary technical terms and focus on practical utility
+    - Avoid unnecessary technical terms and focus on practical utility and explain the whole analysis for an understandable user
+    - Explain clusters ,correlations, outliers, and relationships in a way that is understandable to a non-technical user
+    - Give an advice on what actions the user could take based on the analysis
     - Prohibit responding in english or any other language, must be in Spanish and use professional tone
     - Prohibit showing the code used to generate the analysis, reasoning or any other technical detail
     - Prohibit showing the summary of the analysis, only the interpretation and understandable for a non-technical user
