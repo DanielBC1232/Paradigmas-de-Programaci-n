@@ -5,3 +5,5 @@ scikit-learn
 scipy
 matplotlib
 seaborn
+python-dotenv
+google-generativeai
