@@ -31,7 +31,7 @@ def render():
     '''
 
     # Resumen del análisis
-    st.subheader("Resumen del sistema:")
+    #st.subheader("Resumen del sistema:")
     st.markdown("---") #Separador visual
 
     # Detección de tipos de variables
@@ -59,10 +59,10 @@ def render():
     st.markdown("---")
 
     # Mapa de correlaciones
-    st.subheader("Mapa de correlaciones:")
-    mostrar_graficos(df)
+    # st.subheader("Mapa de correlaciones:")
+    # mostrar_graficos(df)
 
-    st.markdown("---")
+    # st.markdown("---")
 
     # Interpretación por IA
     st.subheader("Interpretación por IA:")

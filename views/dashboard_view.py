@@ -15,10 +15,15 @@ def render():
         return
 
     df = pd.read_csv(DATA_PATH, encoding='utf-8') # Cargar archivo CSV
+    resultado = analizar_dataframe(df) # Ejecuta analyzer.py
 
     # df = DataFrame, el archivo CSV cargado
 
-
-
-
     # Generar graficos y análisis (PENDIENTE) ==
+    st.markdown("---")
+
+    #st.subheader("Mapa de correlaciones:")
+    mostrar_graficos(df)
+
+    #st.markdown("---")
+    
