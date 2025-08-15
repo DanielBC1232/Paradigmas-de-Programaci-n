@@ -58,8 +58,35 @@ def es_fecha(p_fecha):
     # Retorna el formato de la fecha mayoritario si es alto, de lo contrario desmiente que es una fecha
     return mejor_formato if mejor_ratio > 0.8 else None
 
+# ===== Normalizar datos numéricos para análisis =========================
+def normalizar_datos_numericos(df, columnas_numericas):
+
+    # Normaliza columnas numéricas limpiando símbolos, convirtiendo a valores numéricos y redondeando a enteros para análisis limpio
+    for col in columnas_numericas:
+        # Limpiar símbolos no numéricos en columnas de texto
+        if df[col].dtype == 'object':
+            # limpiar caracteres dejando solo numeros
+            df[col] = (
+                df[col].astype(str)
+                .str.replace(r'[^\d.-]', '', regex=True)  # expresion regular quitar símbolos
+                .str.replace(r'(?<!^)-', '', regex=True)    # expresion regular quitar guiones no iniciales
+            )
+        
+        # Convertir a numerico
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+        
+        # Redondear a enteros
+        if df[col].notna().any():
+            df[col] = df[col].round().astype('Int64')
+    
+    return df
+
 # ===== Preparar datos numéricos para análisis ============================
 def preparar_datos_numericos(df, columnas_numericas):
+
+    # Normaliza y convierte las columnas numéricas a tipo numérico, eliminando errores
+    df = normalizar_datos_numericos(df, columnas_numericas)
+
     for col in columnas_numericas:
         df[col] = pd.to_numeric(df[col], errors="coerce")
     df_numerico = df[columnas_numericas].dropna()

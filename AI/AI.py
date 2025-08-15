@@ -9,15 +9,14 @@ load_dotenv()
 # Inicializa el API de Google Gemini
 api_key = os.getenv("GEMINI_API_KEY")
 
-print(f"Using API key: {api_key}")  # Debugging line to check if the API key is loaded correctly
+print(f"API key: {api_key}")  # Comprobar que la clave de API se carga correctamente
 
 genai.configure(api_key=api_key)
 
 def generar_interpretacion(resumen, correlacion, n_clusters, outliers_info, relaciones_info):
     """
-    Generates a data analysis interpretation using the Google Gemini API.
+    Generar analisis con Gemini AI
     """
-    
     prompt = construir_prompt(resumen, correlacion, n_clusters, outliers_info, relaciones_info)
 
     try:
